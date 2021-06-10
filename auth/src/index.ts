@@ -1,21 +1,13 @@
 import express from "express"
 import { json } from "body-parser"
 
+import { currentUserRouter } from "src/routes/current-user"
 
 const app = express()
 
 app.use(json())
 
-app.get('/api/users/me', (req, res) => {
-    res.send("Hi there")
-    console.log(req)
-})
-
-app.get('/', (req, res) => {
-    res.send("HELLO THERE!")
-    console.log("WADDUP")
-
-})
+app.use(currentUserRouter)
 
 app.listen(3000, () => {
     console.log("Listening on port 3000!!!")
