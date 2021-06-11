@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 // that are required to create a new user
 interface UserAttrs {
 	email: string;
-	passwrod: string;
+	password: string;
 }
 
 // An interface that describes the properties
