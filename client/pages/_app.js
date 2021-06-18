@@ -1,7 +1,11 @@
 import "bootstrap/dist/css/bootstrap.css";
 
-const Wrapper = ({ Component, pageProps }) => {
-  return <Component {...pageProps} />;
+const AppComponent = ({ Component, pageProps }) => {
+  return (
+    <div>
+      <Component {...pageProps} />;
+    </div>
+  );
 };
 
-export default Wrapper;
+export default AppComponent;
