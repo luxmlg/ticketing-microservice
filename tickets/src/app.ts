@@ -7,6 +7,7 @@ import { errorHandler, NotFoundError, currentUser } from "@luxticketing/common";
 
 import { createTicketRouter } from "./routes/new";
 import { showTicketRouter } from "./routes/show";
+import { indexTicketRouter } from "./routes/index";
 
 const app = express();
 app.set("trust proxy", true);
@@ -20,6 +21,7 @@ app.use(
 );
 app.use(currentUser);
 
+app.use(indexTicketRouter);
 app.use(createTicketRouter);
 app.use(showTicketRouter);
 
