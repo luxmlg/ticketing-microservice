@@ -40,8 +40,10 @@ afterAll(async () => {
 
 // This function could be a helper function not a global one
 global.signin = () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	const payload = {
-		id: "randomId12345",
+		id,
 		email: "test@example.com",
 	};
 
