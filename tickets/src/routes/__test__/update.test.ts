@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 
 import { app } from "../../app";
 
+import { natsWrapper } from "../../nats-wrapper";
+
 it("retunrs a 404 if the provided id does not exist", async () => {
 	const id = new mongoose.Types.ObjectId().toHexString();
 	await request(app)
@@ -92,4 +94,26 @@ it("updates the ticket provided valid inputs", async () => {
 
 	expect(ticketResponse.body.title).toEqual(newTitle);
 	expect(ticketResponse.body.price).toEqual(newPrice);
+});
+
+it("publishes an event", async () => {
+	const cookie = global.signin();
+
+	const res = await request(app).post("/api/tickets").set("Cookie", cookie).send({
+		title: "SOME TITLE",
+		price: 10,
+	});
+
+	const newTitle = "ANOTHER TITLE";
+	const newPrice = 20;
+	await request(app)
+		.put(`/api/tickets/${res.body.id}`)
+		.set("Cookie", cookie)
+		.send({
+			title: newTitle,
+			price: newPrice,
+		})
+		.expect(200);
+
+	expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
