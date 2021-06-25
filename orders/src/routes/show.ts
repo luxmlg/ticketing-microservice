@@ -8,7 +8,7 @@ import {
 	validateRequest,
 } from "@luxticketing/common";
 import { Order } from "../models/order";
-import { body } from "express-validator";
+import { param } from "express-validator";
 
 const router = express.Router();
 
@@ -16,11 +16,12 @@ router.get(
 	"/api/orders/:orderId",
 	requireAuth,
 	[
-		body("orderId")
+		param("orderId")
 			.notEmpty()
 			.custom((input: string) => mongoose.Types.ObjectId.isValid(input))
 			.withMessage("orderId must be provided"),
 	],
+	validateRequest,
 	async (req: Request, res: Response) => {
 		const order = await Order.findById(req.params.orderId).populate("ticket");
 		if (!order) {
@@ -30,7 +31,7 @@ router.get(
 		if (order.userId != req.currentUser!.id) {
 			throw new NotAuthorizedError();
 		}
-		res.send({});
+		res.send(order);
 	},
 );
 
