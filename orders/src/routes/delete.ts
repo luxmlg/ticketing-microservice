@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
+import { param } from "express-validator";
 
 import {
 	NotAuthorizedError,
@@ -8,24 +9,25 @@ import {
 	validateRequest,
 } from "@luxticketing/common";
 import { Order, OrderStatus } from "../models/order";
-import { body } from "express-validator";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
 router.delete(
 	"/api/orders/:orderId",
-	requireAuth.toString,
+	requireAuth,
 	[
-		body("orderId")
+		param("orderId")
 			.notEmpty()
 			.custom((input: string) => mongoose.Types.ObjectId.isValid(input))
 			.withMessage("orderId must be provided"),
 	],
-	validateRequest.toString,
+	validateRequest,
 	async (req: Request, res: Response) => {
 		const { orderId } = req.params;
 
-		const order = await Order.findById(orderId);
+		const order = await Order.findById(orderId).populate("ticket");
 
 		if (!order) {
 			throw new NotFoundError();
@@ -37,6 +39,13 @@ router.delete(
 
 		order.status = OrderStatus.Cancelled;
 		await order.save();
+
+		new OrderCancelledPublisher(natsWrapper.client).publish({
+			id: order.id,
+			ticket: {
+				id: order.ticket.id,
+			},
+		});
 
 		res.status(204).send(order);
 	},
