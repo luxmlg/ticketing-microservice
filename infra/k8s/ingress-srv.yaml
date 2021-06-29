@@ -12,7 +12,7 @@ spec:
       http:
         paths:
           - path: /api/users
-            pathType: Prefix
+            pathType: Prefix  
             backend:
               service:
                 name: auth-srv
@@ -30,6 +30,13 @@ spec:
             backend:
               service:
                 name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments
+            pathType: Prefix
+            backend:
+              service:
+                name: payments-srv
                 port:
                   number: 3000
           - path: /
