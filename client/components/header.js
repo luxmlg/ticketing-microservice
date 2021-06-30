@@ -1,7 +1,7 @@
 import Link from "next/link";
 import signUp from "../pages/auth/signin";
 
-export default ({ currentUser }) => {
+const Header = ({ currentUser }) => {
   const links = [
     !currentUser && { label: "Sign Up", href: "/auth/signup" },
     !currentUser && { label: "Sign In", href: "/auth/signin" },
@@ -30,3 +30,5 @@ export default ({ currentUser }) => {
     </nav>
   );
 };
+
+export default Header;
